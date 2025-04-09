@@ -36,6 +36,7 @@ def move_forward():
     motor_rear_in3.value(1)
     motor_rear_in4.value(0)
 
+//Lisää tähän määritelmä, että kääntyy tietyn matkan/ajan vasemmalle
 def turn_left():
     motor_front_in1.value(0)
     motor_front_in2.value(1)
