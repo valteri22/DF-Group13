@@ -37,6 +37,7 @@ def move_forward():
     motor_rear_in4.value(0)
 
 //Lisää tähän määritelmä, että kääntyy tietyn matkan/ajan vasemmalle
+//Vai hoitaako utime.sleep(0.5) jo sen asian?
 def turn_left():
     motor_front_in1.value(0)
     motor_front_in2.value(1)
