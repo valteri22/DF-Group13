@@ -9,13 +9,13 @@ motor_rear_in3 = Pin(2, Pin.OUT)
 motor_rear_in4 = Pin(3, Pin.OUT)
 
 ultrasonic_sig = Pin(4, Pin.OUT)
-led = Pin(6, Pin.OUT)
-buzzer = PWM(Pin(5))
+led = Pin(16, Pin.OUT)
+buzzer = PWM(Pin(11))
 button = Pin(7, Pin.IN, Pin.PULL_UP)
 
 #variables
-alarm_time = "07:30"
-is_alarm_active = false
+alarm_time = "15:07"
+is_alarm_active = True
 
 #setting alarm
 def set_alarm(time):
@@ -33,18 +33,16 @@ def stop_motor():
 def move_forward():
     motor_front_in1.value(1)
     motor_front_in2.value(0)
-    motor_rear_in3.value(1)
+    motor_rear_in3.value(0)
     motor_rear_in4.value(0)
 
-//Lisää tähän määritelmä, että kääntyy tietyn matkan/ajan vasemmalle
-//Vai hoitaako utime.sleep(0.5) jo sen asian?
 def turn_left():
-    motor_front_in1.value(0)
-    motor_front_in2.value(1)
+    motor_front_in1.value(1)
+    motor_front_in2.value(0)
     motor_rear_in3.value(1)
     motor_rear_in4.value(0)
-    utime.sleep(0.5) #Esim.
-    stop()
+    time.sleep(0.5) #Esim.
+    stop_motor()
 
 # Sound buzzer
 def play_buzzer():
@@ -60,14 +58,14 @@ def alarm():
     print("Alarm activated!")
     while is_alarm_active:
         move_forward()
-        blink_led()
-        sound_buzzer()
+        led.value(1)
+        play_buzzer()
 
         # Check for obstacles
         distance = get_distance()
         if distance < 20: #20cm distance
-            stop()
-            utime.sleep(0.2)
+            stop_motor()
+            time.sleep(0.2)
             turn_left()
             distance = get_distance()
             if distance >= 20:
@@ -75,19 +73,24 @@ def alarm():
         
         # Check button to deactivate alarm
         if check_button():
-            stop()
+            stop_motor()
             buzzer.duty_u16(0)
             is_alarm_active = False
             print("Alarm deactivated!")
+
+def check_time():
+    current_time = "15:49"
+    return current_time
 
 # Main Loop
 def main():
     while True:
         current_time = check_time()
         if current_time == alarm_time:
-            alarm()
-        utime.sleep(1)  # Reduce CPU usage
+            #alarm()
+            turn_left()
+            time.sleep(1)  # Reduce CPU usage
 
 # Example Setup
-set_alarm("07:30")  # Set alarm time
+alarm_time = "15:49"
 main()  # Run main loop
