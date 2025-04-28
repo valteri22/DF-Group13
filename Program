@@ -1,6 +1,6 @@
 import machine
 from machine import Pin, PWM
-import time
+import utime
 
 # GPIO-pinnit
 motor_front_in1 = Pin(0, Pin.OUT)
@@ -8,14 +8,33 @@ motor_front_in2 = Pin(1, Pin.OUT)
 motor_rear_in3 = Pin(2, Pin.OUT)
 motor_rear_in4 = Pin(3, Pin.OUT)
 
-ultrasonic_sig = Pin(4, Pin.OUT)
+trigger = Pin(xx, Pin.OUT)
+echo = Pin(xx, Pin.IN)
+
 led = Pin(16, Pin.OUT)
 buzzer = PWM(Pin(11))
-button = Pin(7, Pin.IN, Pin.PULL_UP)
+switch = Pin(7, Pin.IN, Pin.PULL_UP)
 
-#variables
-alarm_time = "15:07"
-is_alarm_active = True
+#variables, esimerkkiaika
+alarm_time = "12:00"
+is_alarm_active = False
+
+#ultrasonic sensor
+def get_distance():
+    trigger.low()
+    utime.sleep_us(2)
+    trigger.high()
+    utime.sleep_us(10)
+    trigger.low()
+    
+    while echo.value() == 0:
+        start = utime.ticks_us()
+    while echo.value() == 1:
+        end = utime.ticks_us()
+    
+    duration = utime.ticks_diff(end, start)
+    distance = (duration * 0.0343) / 2  # Nopeus: 343 m/s
+    return distance
 
 #setting alarm
 def set_alarm(time):
@@ -41,14 +60,14 @@ def turn_left():
     motor_front_in2.value(0)
     motor_rear_in3.value(1)
     motor_rear_in4.value(0)
-    time.sleep(0.5) #Esim.
+    utime.sleep(0.5) #Esim.
     stop_motor()
 
 # Sound buzzer
 def play_buzzer():
     buzzer.freq(1000)  # Taajuus (Hz)
     buzzer.duty_u16(500)  # Äänenvoimakkuus
-    time.sleep(0.5)
+    utime.sleep(0.5)
     buzzer.duty_u16(0)  # Sammuta ääni
 
 # Alarm logic
@@ -65,32 +84,30 @@ def alarm():
         distance = get_distance()
         if distance < 20: #20cm distance
             stop_motor()
-            time.sleep(0.2)
+            utime.sleep(0.2)
             turn_left()
             distance = get_distance()
             if distance >= 20:
                 move_forward()
         
         # Check button to deactivate alarm
-        if check_button():
+        if switch.value() == 0:
             stop_motor()
             buzzer.duty_u16(0)
+            led.value(0)
             is_alarm_active = False
             print("Alarm deactivated!")
 
 def check_time():
-    current_time = "15:49"
-    return current_time
+    return utime.strftime("%H:%M")
 
 # Main Loop
 def main():
+    global alarm_time
     while True:
         current_time = check_time()
         if current_time == alarm_time:
-            #alarm()
-            turn_left()
-            time.sleep(1)  # Reduce CPU usage
+            alarm()
+            utime.sleep(1)
 
-# Example Setup
-alarm_time = "15:49"
 main()  # Run main loop
