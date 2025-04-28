@@ -8,12 +8,12 @@ motor_front_in2 = Pin(1, Pin.OUT)
 motor_rear_in3 = Pin(2, Pin.OUT)
 motor_rear_in4 = Pin(3, Pin.OUT)
 
-trigger = Pin(xx, Pin.OUT)
-echo = Pin(xx, Pin.IN)
+trigger = Pin(32, Pin.OUT)
+echo = Pin(31, Pin.IN)
 
 led = Pin(16, Pin.OUT)
-buzzer = PWM(Pin(11))
-switch = Pin(7, Pin.IN, Pin.PULL_UP)
+buzzer = PWM(Pin(9))
+switch = Pin(34, Pin.IN, Pin.PULL_UP)
 
 #variables, esimerkkiaika
 alarm_time = "12:00"
