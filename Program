@@ -60,11 +60,21 @@ def move_forward():
     motor_rear_in4.value(0)
 
 def turn_left():
+    print("Turning left")
     motor_front_in1.value(1)
     motor_front_in2.value(0)
     motor_rear_in3.value(1)
     motor_rear_in4.value(0)
-    utime.sleep(0.5) #Esim.
+    utime.sleep(0.5)
+    stop_motor()
+    
+def turn_right():
+    print("Turning right")
+    motor_front_in1.value(1)
+    motor_front_in2.value(0)
+    motor_rear_in3.value(0)
+    motor_rear_in4.value(1)
+    utime_sleep(0.5)
     stop_motor()
 
 # Sound buzzer
@@ -81,18 +91,20 @@ def alarm():
     print("Alarm activated!")
     while is_alarm_active:
         move_forward()
-        led.value(1)
         play_buzzer()
 
         # Check for obstacles
         distance = get_distance()
-        if distance < 20: #20cm distance
+        if distance < 20:
+            print("Object detected")
             stop_motor()
             utime.sleep(0.2)
             turn_left()
             distance = get_distance()
             if distance >= 20:
+                turn_right()
                 move_forward()
+                print("moving forward")
         
         if distance == -1:
             print("Ultrasonic sensor error: No signal")
@@ -119,5 +131,6 @@ def main():
             alarm()
             utime.sleep(1)
             
-set_alarm("10:49")
+set_alarm("11:36")
 main()  # Run main loop
+#stop_motor()
