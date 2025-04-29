@@ -118,7 +118,7 @@ def alarm():
 
 def check_time():
     t = utime.localtime()
-    return "{:02}:{:02}".format(t[3], t[4])
+    return "{:02}:{:02}:{:02}".format(t[3], t[4], t[5])
 
 current_time = check_time()
 
@@ -131,6 +131,6 @@ def main():
             alarm()
             utime.sleep(1)
             
-set_alarm("11:36")
+set_alarm("11:36:00")
 main()  # Run main loop
 #stop_motor()
