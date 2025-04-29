@@ -79,7 +79,7 @@ def turn_right():
 
 # Sound buzzer
 def play_buzzer():
-    buzzer.freq(1000)  # Taajuus (Hz)
+    buzzer.freq(2000)  # Taajuus (Hz)
     buzzer.duty_u16(5000)  # Äänenvoimakkuus
     utime.sleep(0.5)
     buzzer.duty_u16(0)  # Sammuta ääni
@@ -100,13 +100,20 @@ def alarm():
             stop_motor()
             utime.sleep(0.2)
             turn_left()
+            distance = get_distance()
+            print(f"Distance after turning left: {distance}")
+            #Check for obstacles after turning
+            #If no obstacles, turn back right (wheels get straigh)
             
             if distance >= 20:
                 turn_right()
+                distance = get_distance()
+                print(f"Distance after turning right: {distance}")
                 
-                if distance > 20:
-                    move_forward()
-                    print("moving forward")
+            #Ifn no obstacles, moving forward
+            if distance > 20:
+                move_forward()
+                print("moving forward")
         
         if distance == -1:
             print("Ultrasonic sensor error: No signal")
@@ -133,6 +140,9 @@ def main():
             alarm()
             utime.sleep(1)
             
-set_alarm("14:03:00")
-main()  # Run main loop
+#set the alarm time            
+set_alarm("14:43:00")
+
+#the main loop
+main()
 #stop_motor()
