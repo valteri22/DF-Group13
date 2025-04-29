@@ -97,7 +97,10 @@ def alarm():
             print("Alarm deactivated!")
 
 def check_time():
-    return utime.strftime("%H:%M")
+    t = utime.localtime()
+    return "{:02}:{:02}".format(t[3], t[4])
+
+current_time = check_time()
 
 # Main Loop
 def main():
