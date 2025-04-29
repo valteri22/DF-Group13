@@ -26,14 +26,19 @@ def get_distance():
     utime.sleep_us(10)
     trigger.low()
     
+    start = utime.ticks_us()
     while echo.value() == 0:
-        start = utime.ticks_us()
+        if utime.ticks_diff(utime.ticks_us(), start) > 30000:  # Aikakatkaisu 30ms
+            return -1  # Virhe: Ei signaalia
+
+    start = utime.ticks_us()
     while echo.value() == 1:
-        end = utime.ticks_us()
-    
-    duration = utime.ticks_diff(end, start)
-    distance = (duration * 0.0343) / 2  # Nopeus: 343 m/s
-    return distance
+        if utime.ticks_diff(utime.ticks_us(), start) > 30000:  # Aikakatkaisu 30ms
+            return -1  # Virhe: Liian pitkä signaali
+
+    duration = utime.ticks_diff(utime.ticks_us(), start)
+    return (duration * 0.0343) / 2  # Palauttaa etäisyyden cm
+
 
 #setting alarm
 def set_alarm(time):
@@ -65,7 +70,7 @@ def turn_left():
 # Sound buzzer
 def play_buzzer():
     buzzer.freq(1000)  # Taajuus (Hz)
-    buzzer.duty_u16(500)  # Äänenvoimakkuus
+    buzzer.duty_u16(2000)  # Äänenvoimakkuus
     utime.sleep(0.5)
     buzzer.duty_u16(0)  # Sammuta ääni
 
@@ -89,6 +94,9 @@ def alarm():
             if distance >= 20:
                 move_forward()
         
+        if distance == -1:
+            print("Ultrasonic sensor error: No signal")
+
         # Check button to deactivate alarm
         if switch.value() == 0:
             stop_motor()
@@ -110,5 +118,6 @@ def main():
         if current_time == alarm_time:
             alarm()
             utime.sleep(1)
-
+            
+set_alarm("10:49")
 main()  # Run main loop
